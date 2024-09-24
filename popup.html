@@ -1,17 +1,46 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>Remove Fake Reviews</title>
+    <title>Remove Sakura Reviews</title>
     <style>
+      body {
+        font-family: Arial, sans-serif;
+        background-color: #f4f4f4;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        margin: 0;
+      }
+
       button {
-        font-size: 16px;
-        padding: 10px;
+        font-size: 18px;
+        padding: 15px;
         width: 100%;
+        max-width: 400px;
+        background-color: #ff9900;
+        color: white;
+        border: none;
+        border-radius: 8px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        cursor: pointer;
+        transition: background-color 0.3s ease, box-shadow 0.3s ease;
+        white-space: nowrap;
+      }
+
+      button:hover {
+        background-color: #e68a00;
+        box-shadow: 0 6px 8px rgba(0, 0, 0, 0.15);
+      }
+
+      button:active {
+        background-color: #cc7a00;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
       }
     </style>
   </head>
   <body>
-    <button id="remove-reviews">Remove Fake Reviews</button>
+    <button id="remove-reviews">Remove Sakura Reviews</button>
     <script src="popup.js"></script>
   </body>
 </html>
