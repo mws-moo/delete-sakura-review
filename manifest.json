@@ -13,7 +13,7 @@
     "content_scripts": [
       {
         "matches": ["https://www.amazon.co.jp/*"],
-        "js": ["content.js"]
+        "js": ["popup.js"]
       }
     ]
   }
