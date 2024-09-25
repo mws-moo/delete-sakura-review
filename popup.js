@@ -17,6 +17,7 @@ document.getElementById("remove-reviews").addEventListener("click", () => {
       button.disabled = false; // ボタンを再度有効化
     });
   });
+});
 
   
 function removeFakeReviews() {
