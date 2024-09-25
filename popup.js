@@ -69,6 +69,7 @@ function removeFakeReviews() {
   // checkIfHarmful関数でレビュー情報の配列を受け取る
   async function checkIfHarmful(reviewDataList) {
     // LLM API呼び出し
+    const apiKey = document.getElementById("openai-api-key").value;  // ユーザーが入力したAPIキーを取得
     // ここではダミーとしてランダムに有害と判定します。
     // 実際にはAPIリクエストを送信して判定を行います。
     // レビューごとに有害かどうかをランダムに判定
