@@ -1,5 +1,5 @@
-document.getElementById("remove-reviews").addEventListener("click", () => {
-  const button = document.getElementById("remove-reviews");
+const button = document.getElementById("remove-reviews");
+button.addEventListener("click", () => {  
   const statusMessage = document.getElementById("status-message");
 
   // 処理中メッセージを表示
@@ -14,7 +14,6 @@ document.getElementById("remove-reviews").addEventListener("click", () => {
     }, () => {
       // 処理完了メッセージを表示
       statusMessage.textContent = "サクラレビューが削除されました";
-      button.disabled = false; // ボタンを再度有効化
     });
   });
 });

@@ -1,74 +1,74 @@
 <!DOCTYPE html>
 <html lang="ja">
 
-<head>
-  <meta charset="UTF-8"> <!-- 文字エンコーディングをUTF-8に設定 -->
-  <title>Remove Sakura Reviews</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      background-color: #f4f4f4;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 100vh;
-      margin: 0;
-    }
+  <head>
+    <meta charset="UTF-8"> <!-- 文字エンコーディングをUTF-8に設定 -->
+    <title>Remove Sakura Reviews</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        background-color: #f4f4f4;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        margin: 0;
+      }
 
-    #container {
-      text-align: center;
-      background-color: white;
-      padding: 20px;
-      border-radius: 10px;
-      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-    }
+      #container {
+        text-align: center;
+        background-color: white;
+        padding: 20px;
+        border-radius: 10px;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+      }
 
-    button {
-      font-size: 20px;
-      padding: 15px 30px;
-      width: 100%;
-      max-width: 300px;
-      background-color: #ff9900;
-      color: white;
-      border: none;
-      border-radius: 8px;
-      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-      cursor: pointer;
-      transition: background-color 0.3s ease, box-shadow 0.3s ease;
-      white-space: nowrap;
-    }
+      button {
+        font-size: 20px;
+        padding: 15px 30px;
+        width: 100%;
+        max-width: 300px;
+        background-color: #ff9900;
+        color: white;
+        border: none;
+        border-radius: 8px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        cursor: pointer;
+        transition: background-color 0.3s ease, box-shadow 0.3s ease;
+        white-space: nowrap;
+      }
 
-    button:hover {
-      background-color: #e68a00;
-      box-shadow: 0 8px 15px rgba(0, 0, 0, 0.2);
-    }
+      button:hover {
+        background-color: #e68a00;
+        box-shadow: 0 8px 15px rgba(0, 0, 0, 0.2);
+      }
 
-    button:active {
-      background-color: #cc7a00;
-      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-      transform: scale(0.98);
-    }
+      button:active {
+        background-color: #cc7a00;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        transform: scale(0.98);
+      }
 
-    #status-message {
-      margin-top: 20px;
-      font-size: 16px;
-      color: #666;
-      opacity: 0;
-      transition: opacity 0.5s ease-in-out;
-    }
+      #status-message {
+        margin-top: 20px;
+        font-size: 16px;
+        color: #666;
+        opacity: 0;
+        transition: opacity 0.5s ease-in-out;
+      }
 
-    #status-message.show {
-      opacity: 1;
-    }
-  </style>
-</head>
+      #status-message.show {
+        opacity: 1;
+      }
+    </style>
+  </head>
 
-<body>
-  <div id="container">
-    <button id="remove-reviews">Remove Sakura Reviews</button>
-    <div id="status-message"></div>
-  </div>
-  <script src="popup.js"></script>
-</body>
+  <body>
+    <div id="container">
+      <button id="remove-reviews">Remove Sakura Reviews</button>
+      <div id="status-message"></div>
+    </div>
+    <script src="popup.js"></script>
+  </body>
 
 </html>
