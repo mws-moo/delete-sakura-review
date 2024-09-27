@@ -1,5 +1,5 @@
 const button = document.getElementById("remove-reviews");
-button.addEventListener("click", () => {  
+button.addEventListener("click", () => {
   const statusMessage = document.getElementById("status-message");
 
   // 処理中メッセージを表示
@@ -18,9 +18,10 @@ button.addEventListener("click", () => {
   });
 });
 
-  
+
+
 function removeFakeReviews() {
-   const reviewList = document.getElementById("cm-cr-dp-review-list") || document.getElementById("cm_cr-review_list");
+  const reviewList = document.getElementById("cm-cr-dp-review-list") || document.getElementById("cm_cr-review_list");
   if (!reviewList) {
     console.error("レビューリストが見つかりません。");
     return;
@@ -53,7 +54,7 @@ function removeFakeReviews() {
         reviewTitle: reviewTitle,
         reviewText: reviewText
       };
-      
+
       allReviewData.push(reviewData);
     } else {
       console.error("レビュー情報が不足しています。");
@@ -62,9 +63,83 @@ function removeFakeReviews() {
 
   // すべてのレビュー情報が収集された後に、一度だけAPIリクエスト
   if (allReviewData.length > 0) {
-    console.log(allReviewData);
     checkIfHarmful(allReviewData);
   }
+
+  function sendChat(text, chatGptApiKey) {
+    // OpenAIのエンドポイントURLを定義。
+    const endPoint = "https://api.openai.com/v1/chat/completions";
+    const modelName = "gpt-4o"; // 使用するモデルの名前を定義。
+
+    ans = "";
+
+    // チャットの初期メッセージを定義
+    const messages = [
+      {
+        role: "system", //役割
+        content: ["これからAmazonのレビューを渡します。その中でサクラレビューだと思われるもののインデックスだけを教えてください。",
+          "サクラレビューが見当たらない場合は, -1を出力してください。",
+          "",
+          "例1",
+          "",
+          "index: 1, 4がサクラレビューと思われるとき",
+          "",
+          "答え1:",
+          "",
+          "1, 4",
+          "",
+          "例2",
+          "サクラレビューが見当たらないとき",
+          "",
+          "答え2:",
+          "",
+          "-1",
+          "",
+          "問"
+        ].join('\n')
+      },
+      {
+        role: "user", // ユーザーからのメッセージ
+        content: text
+      }
+    ];
+
+    // リクエストオプション
+    const requestOptions = {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${chatGptApiKey}`
+      },
+      body: JSON.stringify({
+        model: modelName,
+        messages: messages,
+        max_tokens: 500 //レスポンスのトークンの最大数
+      })
+    };
+
+    const maxRetries = 3; // 最大リトライ回数
+    const retryDelay = 2000; // リトライまでの待機時間（ミリ秒）
+    retryCount = 3;
+
+    fetch(new Request(endPoint, requestOptions))
+      .then(res => res.json())
+      .then(json => {
+        console.log(json.choices[0].message.content);
+        ans += json.choices[0].message.content;
+      })
+      .catch(err => {
+        if (err.status === 429 && retryCount < maxRetries) {
+          // 429エラー時のリトライ処理
+          console.log(`Retrying... (${retryCount + 1})`);
+          setTimeout(() => sendChat(text, chatGptApiKey, retryCount + 1), retryDelay);
+        } else {
+          console.error('Request failed: ', err);
+        }
+      });
+
+    return ans;
+  };
 
   // checkIfHarmful関数でレビュー情報の配列を受け取る
   async function checkIfHarmful(reviewDataList) {
@@ -72,7 +147,39 @@ function removeFakeReviews() {
     // ここではダミーとしてランダムに有害と判定します。
     // 実際にはAPIリクエストを送信して判定を行います。
     // レビューごとに有害かどうかをランダムに判定
-    const harmfulResults = reviewDataList.map(() => Math.random() > 0.5);
+
+    // TODO: APIキーを入力してください
+    const apiKey = "INPUT YOUR API KEY";
+    console.log(apiKey);
+
+
+    text = "";
+    for (let i = 0; i < reviewDataList.length; i++) {
+      text += "index: " + i + "\n";
+      text += "名前: " + reviewDataList[i].userName + "\n";
+      text += "星: " + reviewDataList[i].starRating + "\n";
+      text += "タイトル: " + reviewDataList[i].reviewTitle + "\n";
+      text += "本文: " + reviewDataList[i].reviewText + "\n";
+      text += "\n";
+    }
+
+    ans = await sendChat(text + "答え" + "\n", apiKey);
+
+    console.log("ans " + ans);
+
+    function textToList(text) {
+      // テキストをカンマとスペースで分割し、それぞれを数値に変換する
+      return text.split(',').map(num => parseInt(num.trim(), 10));
+    }
+
+    list = textToList(ans);
+    print(list);
+
+    const harmfulResults = list;
+
+    if (harmfulResults[0] == -1) {
+      return;
+    }
 
     harmfulResults.forEach((isHarmful, index) => {
       if (isHarmful) {
@@ -85,4 +192,3 @@ function removeFakeReviews() {
     });
   }
 }
-
