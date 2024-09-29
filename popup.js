@@ -66,18 +66,19 @@ function removeFakeReviews() {
     checkIfHarmful(allReviewData);
   }
 
-  function sendChat(text, chatGptApiKey) {
+  async function sendChat(text, chatGptApiKey) {
     // OpenAIのエンドポイントURLを定義。
     const endPoint = "https://api.openai.com/v1/chat/completions";
     const modelName = "gpt-4o"; // 使用するモデルの名前を定義。
-
-    ans = "";
 
     // チャットの初期メッセージを定義
     const messages = [
       {
         role: "system", //役割
-        content: ["これからAmazonのレビューを渡します。その中でサクラレビューだと思われるもののインデックスだけを教えてください。",
+        content: [
+          "これからAmazonのレビューを渡します。その中でサクラレビューだと思われるもののインデックスだけを教えてください。",
+          "サクラレビューは, 他のレビューと比べて内容が不自然であることが多いです。",
+          "例えば, 他のレビューと比べて内容が異常に短い, 他のレビューと比べて内容が異常に長い, ポジティブ・ネガティブなことしか書いていない, 理由なく星5や星1としている, 不自然な日本語などです。",
           "サクラレビューが見当たらない場合は, -1を出力してください。",
           "",
           "例1",
@@ -120,25 +121,33 @@ function removeFakeReviews() {
 
     const maxRetries = 3; // 最大リトライ回数
     const retryDelay = 2000; // リトライまでの待機時間（ミリ秒）
-    retryCount = 3;
+    let retryCount = 0;
 
-    fetch(new Request(endPoint, requestOptions))
-      .then(res => res.json())
-      .then(json => {
-        console.log(json.choices[0].message.content);
-        ans += json.choices[0].message.content;
-      })
-      .catch(err => {
-        if (err.status === 429 && retryCount < maxRetries) {
-          // 429エラー時のリトライ処理
-          console.log(`Retrying... (${retryCount + 1})`);
-          setTimeout(() => sendChat(text, chatGptApiKey, retryCount + 1), retryDelay);
-        } else {
-          console.error('Request failed: ', err);
+    while (retryCount < maxRetries) {
+      try {
+        const res = await fetch(new Request(endPoint, requestOptions));
+        if (!res.ok) {
+          if (res.status === 429 && retryCount < maxRetries) {
+            retryCount++;
+            console.log(`Retrying... (${retryCount})`);
+            await new Promise(resolve => setTimeout(resolve, retryDelay));
+            continue; // リトライ
+          } else {
+            throw new Error(`Request failed with status: ${res.status}`);
+          }
         }
-      });
 
-    return ans;
+        const json = await res.json();
+        console.log(json.choices[0].message.content);
+        return json.choices[0].message.content; // 正常に取得した場合、ansを返す
+      } catch (err) {
+        console.error('Request failed: ', err);
+        if (retryCount >= maxRetries) {
+          throw new Error('Maximum retries reached');
+        }
+      }
+    }
+    return null;
   };
 
   // checkIfHarmful関数でレビュー情報の配列を受け取る
@@ -150,7 +159,6 @@ function removeFakeReviews() {
 
     // TODO: APIキーを入力してください
     const apiKey = "INPUT YOUR API KEY";
-    console.log(apiKey);
 
 
     text = "";
@@ -165,17 +173,19 @@ function removeFakeReviews() {
 
     ans = await sendChat(text + "答え" + "\n", apiKey);
 
-    console.log("ans " + ans);
+    function convertToList(str) {
+      // 改行や「答え:」などの不要な部分を削除
+      const cleanedStr = str.replace(/\s*答え:\s*/, '').trim();
 
-    function textToList(text) {
-      // テキストをカンマとスペースで分割し、それぞれを数値に変換する
-      return text.split(',').map(num => parseInt(num.trim(), 10));
+      // カンマで区切って配列に変換し、数値に変換する
+      return cleanedStr.split(',').map(num => parseInt(num.trim(), 10));
     }
 
-    list = textToList(ans);
-    print(list);
+    list = convertToList(ans);
 
     const harmfulResults = list;
+
+    console.log(harmfulResults);
 
     if (harmfulResults[0] == -1) {
       return;
