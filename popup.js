@@ -124,11 +124,11 @@ function removeFakeReviews() {
     let retryCount = 0;
 
     while (retryCount < maxRetries) {
+      retryCount++;
       try {
         const res = await fetch(new Request(endPoint, requestOptions));
         if (!res.ok) {
           if (res.status === 429 && retryCount < maxRetries) {
-            retryCount++;
             console.log(`Retrying... (${retryCount})`);
             await new Promise(resolve => setTimeout(resolve, retryDelay));
             continue; // リトライ
@@ -184,8 +184,6 @@ function removeFakeReviews() {
     list = convertToList(ans);
 
     const harmfulResults = list;
-
-    console.log(harmfulResults);
 
     if (harmfulResults[0] == -1) {
       return;
