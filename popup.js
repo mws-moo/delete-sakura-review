@@ -1,14 +1,26 @@
-document.getElementById("remove-reviews").addEventListener("click", () => {
-    chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
-      chrome.scripting.executeScript({
-        target: { tabId: tabs[0].id },
-        function: removeFakeReviews
-      });
+const button = document.getElementById("remove-reviews");
+button.addEventListener("click", () => {  
+  const statusMessage = document.getElementById("status-message");
+
+  // 処理中メッセージを表示
+  statusMessage.textContent = "Removing Sakura Reviews...";
+  statusMessage.classList.add("show");
+  button.disabled = true; // ボタンを無効化して重複クリックを防ぐ
+
+  chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+    chrome.scripting.executeScript({
+      target: { tabId: tabs[0].id },
+      function: removeFakeReviews
+    }, () => {
+      // 処理完了メッセージを表示
+      statusMessage.textContent = "サクラレビューが削除されました";
     });
   });
+});
+
   
 function removeFakeReviews() {
-  const reviewList = document.getElementById("cm-cr-dp-review-list");
+   const reviewList = document.getElementById("cm-cr-dp-review-list") || document.getElementById("cm_cr-review_list");
   if (!reviewList) {
     console.error("レビューリストが見つかりません。");
     return;
