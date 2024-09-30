@@ -1,0 +1,24 @@
+name: Create Release
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v3
+
+    - name: Create zip file
+      run: zip -r "Amazon-Sakura-Review-Remover-v${{ github.sha }}.zip" ./*
+
+    - name: Publish release
+      uses: softprops/action-gh-release@v1
+      with:
+        files: "Amazon-Sakura-Review-Remover-v${{ github.sha }}.zip"
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
