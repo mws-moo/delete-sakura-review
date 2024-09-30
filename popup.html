@@ -60,11 +60,24 @@
       #status-message.show {
         opacity: 1;
       }
+
+      #api-key-input {
+        width: 90%;
+        max-width: 300px;
+        padding: 10px;
+        margin-bottom: 20px;
+      }
+
+      #save-api-key {
+        margin-bottom: 10px;
+      }
     </style>
   </head>
 
   <body>
     <div id="container">
+      <input type="text" id="api-key-input" placeholder="Enter API Key" />
+      <button id="save-api-key">Save API Key</button>
       <button id="remove-reviews">Remove Sakura Reviews</button>
       <div id="status-message"></div>
     </div>

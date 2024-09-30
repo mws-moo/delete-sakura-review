@@ -1,3 +1,25 @@
+const saveApiKeyButton = document.getElementById("save-api-key");
+const apiKeyInput = document.getElementById("api-key-input");
+
+// ローカルストレージにAPIキーを保存
+saveApiKeyButton.addEventListener("click", () => {
+  const apiKey = apiKeyInput.value;
+  if (apiKey) {
+    chrome.storage.local.set({ apiKey: apiKey }, () => {
+      alert("API Key saved!");
+    });
+  } else {
+    alert("Please enter an API Key.");
+  }
+});
+
+// ローカルストレージからAPIキーを取得
+function getApiKey(callback) {
+  chrome.storage.local.get(["apiKey"], (result) => {
+    callback(result.apiKey);
+  });
+}
+
 const button = document.getElementById("remove-reviews");
 button.addEventListener("click", () => {
   const statusMessage = document.getElementById("status-message");
@@ -8,19 +30,27 @@ button.addEventListener("click", () => {
   button.disabled = true; // ボタンを無効化して重複クリックを防ぐ
 
   chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
-    chrome.scripting.executeScript({
-      target: { tabId: tabs[0].id },
-      function: removeFakeReviews
-    }, () => {
-      // 処理完了メッセージを表示
-      statusMessage.textContent = "サクラレビューが削除されました";
+    getApiKey((apiKey) => {
+      if (!apiKey) {
+        alert("Please save an API Key first.");
+        button.disabled = false;
+        return;
+      }
+      chrome.scripting.executeScript({
+        target: { tabId: tabs[0].id },
+        function: removeFakeReviews,
+        args: [apiKey] // APIキーを関数に渡す
+      }, () => {
+        // 処理完了メッセージを表示
+        statusMessage.textContent = "サクラレビューが削除されました";
+      });
     });
   });
 });
 
 
 
-function removeFakeReviews() {
+function removeFakeReviews(apiKey) {
   const reviewList = document.getElementById("cm-cr-dp-review-list") || document.getElementById("cm_cr-review_list");
   if (!reviewList) {
     console.error("レビューリストが見つかりません。");
@@ -66,7 +96,7 @@ function removeFakeReviews() {
     checkIfHarmful(allReviewData);
   }
 
-  async function sendChat(text, chatGptApiKey) {
+  async function sendChat(text, apiKey) {
     // OpenAIのエンドポイントURLを定義。
     const endPoint = "https://api.openai.com/v1/chat/completions";
     const modelName = "gpt-4o"; // 使用するモデルの名前を定義。
@@ -110,7 +140,7 @@ function removeFakeReviews() {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${chatGptApiKey}`
+        Authorization: `Bearer ${apiKey}`
       },
       body: JSON.stringify({
         model: modelName,
@@ -156,11 +186,6 @@ function removeFakeReviews() {
     // ここではダミーとしてランダムに有害と判定します。
     // 実際にはAPIリクエストを送信して判定を行います。
     // レビューごとに有害かどうかをランダムに判定
-
-    // TODO: APIキーを入力してください
-    const apiKey = "INPUT YOUR API KEY";
-
-
     text = "";
     for (let i = 0; i < reviewDataList.length; i++) {
       text += "index: " + i + "\n";
