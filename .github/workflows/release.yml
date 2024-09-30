@@ -26,5 +26,6 @@ jobs:
       uses: softprops/action-gh-release@v1
       with:
         files: "Amazon-Sakura-Review-Remover-v1.0.${{ github.run_number }}.zip"
+        tag: "v1.0.${{ github.run_number }}"
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
