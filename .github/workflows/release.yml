@@ -13,12 +13,17 @@ jobs:
     - name: Checkout repository
       uses: actions/checkout@v3
 
+    - name: Create Tag
+      run: |
+        git tag v1.0.${{ github.run_number }}
+        git push origin v1.0.${{ github.run_number }}
+
     - name: Create zip file
-      run: zip -r "Amazon-Sakura-Review-Remover-v${{ github.sha }}.zip" ./*
+      run: zip -r "Amazon-Sakura-Review-Remover-v1.0.${{ github.run_number }}.zip" ./*
 
     - name: Publish release
       uses: softprops/action-gh-release@v1
       with:
-        files: "Amazon-Sakura-Review-Remover-v${{ github.sha }}.zip"
+        files: "Amazon-Sakura-Review-Remover-v1.0.${{ github.run_number }}.zip"
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
