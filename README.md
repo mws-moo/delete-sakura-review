@@ -1,4 +1,4 @@
-# delete-sakura-review
+# Amazon Sakura Review Remover
 
 Amazonのサクラレビューを削除するChrome拡張
 
